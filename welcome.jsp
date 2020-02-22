@@ -21,7 +21,7 @@ String gender=request.getParameter("n2");
 
 try{
     Class.forName("oracle.jdbc.driver.OracleDriver");
-    Connection con=DriverManager.getConnection("jdbc:oracle:thin:@172.17.0.3:1521:ORCLCDB","SYSTEM","Oradoc_db1");
+    Connection con=DriverManager.getConnection("jdbc:oracle:thin:@10.12.9.222:1521/ORCLCDBXDB.localdomain","SYSTEM","Oradoc_db1");
     PreparedStatement ps=con.prepareStatement("insert into student(sname,gender)values(?,?)");
     ps.setString(1,name);
     ps.setString(2,gender);

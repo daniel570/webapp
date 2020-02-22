@@ -127,7 +127,7 @@ RUN set -e \
 	fi
 
 EXPOSE 8080
-RUN jar -cvf WebApp.war index.html META-INF/ WEB-INF/ welcome.jsp
+#RUN jar -cvf WebApp.war index.html META-INF/ WEB-INF/ welcome.jsp
 RUN rm -rf /usr/local/tomcat/webapps/ROOT
 COPY ./WebApp.war $CATALINA_HOME/webapps/ROOT.war
 CMD ["catalina.sh", "run"]
