@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oracledb
+  labels:
+    app: oracledb
+spec:
+  selector:
+    matchLabels:
+      app: oracledb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: oracledb
+    spec:
+      initContainers:
+      - name: initscripts
+        image: daniel570/ubuntu:18.04-custom #daniel570/alpine:3.7-custom
+        command: ["/bin/bash","-c"] 
+        args: ["apt update; cd /home/oracle/customscripts; cp * /opt/oracle/scripts/setup; cp * /opt/oracle/scripts/startup"]
+        volumeMounts:
+        - mountPath: /opt/oracle/scripts/setup
+          name: customscripts
+        - mountPath: /opt/oracle/scripts/startup
+          name: customscripts
+      containers:
+#      - image: javiermugueta/oracledb
+#      - image: fra.ocir.io/<tenantname>/atrepo/orcldb:latest
+      - image: daniel570/oracledb:12.2.0.1
+        name: orcldb
+        ports:
+        - containerPort: 1521
+          hostPort: 1521
+        volumeMounts:
+        - name: data
+          mountPath: /opt/oracle/oradata
+        - name: customscripts
+          mountPath: /opt/oracle/scripts/setup
+        - name: customscripts
+          mountPath: /opt/oracle/scripts/startup
+      imagePullSecrets:
+        - name: dockerstore
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 54321
+        fsGroup: 54321
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-pvc
+        - name: customscripts
+          emptyDir: {}
